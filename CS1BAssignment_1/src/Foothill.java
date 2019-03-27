@@ -1,0 +1,307 @@
+public class Foothill
+{
+   public static void main(String[] args)
+   {
+      Card card1, card2, card3, card4, card5, card6;
+
+      card1 = new Card('A', Card.Suit.spades);
+      card2 = new Card('0', Card.Suit.spades);
+      card3 = new Card('J', Card.Suit.clubs);
+
+      String report = card1.toString() + "\n" + card2.toString() + "\n"
+            + card3.toString() + "\n ";
+
+      System.out.println(report);
+      
+      card1.set('0', Card.Suit.spades);
+      card2.set('Q', Card.Suit.spades);
+      
+      report = card1.toString() + "\n" + card2.toString() 
+            + "\n" + card3.toString() + "\n";
+      
+      System.out.println(report);
+      
+      card4 = new Card('3', Card.Suit.clubs);
+      card5 = new Card('T', Card.Suit.clubs);
+      card6 = new Card('9', Card.Suit.hearts);
+      
+      Hand myHand = new Hand();
+      
+      for ( int i = 0; i < myHand.MAX_CARDS; i++)
+      {
+         if(i % 3 == 0)
+         {
+            myHand.takeCard(card4);
+         }
+         else if(i % 3 == 1)
+         {
+            myHand.takeCard(card5);
+         }
+         else if(i % 3 == 2)
+         {
+            myHand.takeCard(card6);
+         }
+      }
+       
+      System.out.print("Hand full\n" + "After deal\n" + "Hand = ( " + 
+            myHand.toString() + ")\n");
+      
+      System.out.println("\nTesting inspectCard()");
+      System.out.println(myHand.inspectCard(3));
+      System.out.println(myHand.inspectCard(200) + "\n");
+      
+      for(int i = 0; i < myHand.MAX_CARDS; i++)
+      {
+         System.out.println(myHand.playCard());
+      }
+      System.out.println("After playing all cards");
+      System.out.println("Hand = ( " + myHand.toString() + " )");
+
+   }
+}
+   
+class Card
+{   
+   enum Suit { clubs, diamonds, hearts, spades }
+   
+   private char value;
+   private Suit suit;
+   private boolean errorFlag;
+   
+   public Card(char value, Suit suit)
+   {
+      if(!set(value, suit))
+         errorFlag = true;
+   }
+   
+   public Card(char value)
+   {
+      this(value, Suit.spades);
+   }
+   
+   public Card()
+   {
+      this('A', Suit.spades);
+   }
+   
+   public Card(Card card)
+   {
+      this.suit = card.suit;
+      this.value = card.value;
+   }
+   
+   public String toString()
+   {
+      String retVal, error;
+      
+      if( errorFlag == true )
+      {
+         error = "[ invalid ]";
+         return error;
+      }
+      else
+      {
+         retVal = String.valueOf(value) + " of " + suit;
+         return retVal;
+      }
+   }
+   
+   public boolean set(char value, Suit suit)
+   {
+      if(isValid(value, suit))
+      {
+         this.suit = suit;
+         this.value = value;
+         errorFlag = false;
+         return true;
+      }
+      else
+      {
+         errorFlag = true;
+         return false;
+      }
+   }
+   public Suit getSuit()
+   {
+      return suit;
+   }
+   
+   public char getValue()
+   {
+      return value;
+   }
+   
+   boolean getErrorFlag()
+   {
+      return errorFlag;
+   }
+   
+   private boolean isValid(char value, Suit suit)
+   {
+      char upVal;
+
+      upVal = Character.toUpperCase(value);
+
+      if (upVal == 'A' || upVal == 'K' || upVal == 'Q' || upVal == 'J'
+            || upVal == 'T' || (upVal >= '2' && upVal <= '9'))
+         return true;
+      else
+         return false;
+   }
+   
+   public boolean equals(Card card)
+   {
+      if( this.value == card.value && this.suit == card.suit
+            && this.errorFlag == card.errorFlag)
+            return true;
+         else
+            return false;
+   }
+}  
+class Hand
+{
+   public int MAX_CARDS = 50;
+   
+   private Card[] myCards = new Card[MAX_CARDS];
+   private int numCards;
+   
+   public Hand()
+   {
+      resetHand();
+   }
+   
+   public void resetHand()
+   {
+      numCards = 0;
+   }
+   
+   public boolean takeCard(Card card)
+   {
+      if (numCards >= MAX_CARDS)
+         return false;
+      else
+      {  
+         myCards[numCards] = card;
+         numCards++;
+         return true;
+      }     
+   }
+   
+   public Card playCard()
+   {
+      Card cardOpened;
+
+      cardOpened = myCards[numCards - 1];
+      numCards--;
+
+      return cardOpened;
+   }
+   
+   public String toString()
+   {
+      String allCards = "";
+
+      for(int i = 0; i < numCards; i++)
+      {
+         allCards = myCards[i].toString() + ", " + allCards;
+      }
+
+      return allCards;
+   }
+   
+   public int getNumCards()
+   {
+      return numCards;
+   }
+   
+   public Card inspectCard(int k)
+   {
+      if ( k < 0 || k >= MAX_CARDS)
+      {
+         Card errorCard = new Card('Z', Card.Suit.clubs);
+         return errorCard;
+      }
+      else
+         return myCards[k];       
+   }
+}
+
+/* ---------------------------- paste of run ------------------------------
+ * 
+A of spades
+[ invalid ]
+J of clubs
+ 
+[ invalid ]
+Q of spades
+J of clubs
+
+Hand full
+After deal
+Hand = ( T of clubs, 3 of clubs, 9 of hearts, T of clubs, 3 of clubs, 9 of heart
+s, T of clubs, 3 of clubs, 9 of hearts, T of clubs, 3 of clubs, 9 of hearts, T o
+f clubs, 3 of clubs, 9 of hearts, T of clubs, 3 of clubs, 9 of hearts, T of club
+s, 3 of clubs, 9 of hearts, T of clubs, 3 of clubs, 9 of hearts, T of clubs, 3 o
+f clubs, 9 of hearts, T of clubs, 3 of clubs, 9 of hearts, T of clubs, 3 of club
+s, 9 of hearts, T of clubs, 3 of clubs, 9 of hearts, T of clubs, 3 of clubs, 9 o
+f hearts, T of clubs, 3 of clubs, 9 of hearts, T of clubs, 3 of clubs, 9 of hear
+ts, T of clubs, 3 of clubs, 9 of hearts, T of clubs, 3 of clubs, )
+
+Testing inspectCard()
+3 of clubs
+[ invalid ]
+
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+9 of hearts
+T of clubs
+3 of clubs
+After playing all cards
+Hand = (  )
+
+----------------------------------------------------------------------- */
